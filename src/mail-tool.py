@@ -11,7 +11,7 @@ import getopt
 
 def usage():
     print "使用:"
-    print "\t%s -f haha@163.com -p xixi -a file.txt -t heihei@163.com" % (sys.argv[0])
+    print "\t%s -f haha@163.com -p xixi -a file.txt -t heihei@163.com -s \"this is a test\"" % (sys.argv[0])
 
 def sendFildByMail(config):
     message = MIMEMultipart()
@@ -48,9 +48,9 @@ def sendFildByMail(config):
     smtp.close()
 
 if __name__ == '__main__':
-
+    SUBJECT = ""
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'f:p:t:a:h', ['from=', 'password=', 'to=', 'attach=', 'help'])
+        opts, args = getopt.getopt(sys.argv[1:], 'f:p:t:a:s:h', ['from=', 'password=', 'to=', 'attach=', 'help'])
     except getopt.GetoptError:
         usage()
         sys.exit()
@@ -67,15 +67,20 @@ if __name__ == '__main__':
             TO = value
         elif opt in ("-a", "--attach"):
             ATTACH = value
+        elif opt in ("-s", "--subject"):
+            SUBJECT = value
 
     username = FROM.split("@")[0]
     domain = FROM.split("@")[1]
     smtp_server = "smtp.%s" % domain
 
+    if 0 == len(SUBJECT):
+        SUBJECT = "send by python"
+
     parameter = {
         'from': FROM,
         'to': TO,
-        'subject': 'send by python',
+        'subject': SUBJECT,
         'file': ATTACH,
         'server': smtp_server,
         'port': 25,
